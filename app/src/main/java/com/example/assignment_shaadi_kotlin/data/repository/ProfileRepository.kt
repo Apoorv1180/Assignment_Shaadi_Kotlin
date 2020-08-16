@@ -14,8 +14,7 @@ class ProfileRepository @Inject constructor(
     fun getProfilesFromRepository() = performGetOperation(
         databaseQuery = { localDataSource.getAllProfiles() },
         networkCall = { remoteDataSource.getAllProfilesDataSource() },
-        saveCallResult = { results->localDataSource.insertAllProfiles(results.results)
-            Log.e("results",results.toString())
+        saveCallResult = {localDataSource.insertAllProfiles(it.results)
         }
     )
 
