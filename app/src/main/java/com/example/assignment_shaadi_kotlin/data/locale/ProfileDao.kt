@@ -1,10 +1,8 @@
 package com.example.assignment_shaadi_kotlin.data.locale
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+import com.example.assignment_shaadi_kotlin.data.entities.Result
 
 @Dao
 interface ProfileDao {
@@ -21,5 +19,8 @@ interface ProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProfile(result: com.example.assignment_shaadi_kotlin.data.entities.Result)
+
+    @Update
+    suspend fun updateProfile(result: Result):Int
 
 }

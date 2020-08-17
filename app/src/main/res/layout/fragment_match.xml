@@ -4,12 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
     tools:context=".ui.matchprofile.MatchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/no_data"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:visibility="gone"
+            android:background="@drawable/ic_no_data"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/characters_rv"
+            app:layout_constraintStart_toStartOf="@+id/characters_rv"
+            app:layout_constraintTop_toTopOf="@+id/characters_rv" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/characters_rv"
             android:layout_width="match_parent"
