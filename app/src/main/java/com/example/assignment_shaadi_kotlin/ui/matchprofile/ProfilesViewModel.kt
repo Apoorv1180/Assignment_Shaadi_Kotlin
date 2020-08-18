@@ -24,4 +24,7 @@ class ProfilesViewModel @ViewModelInject constructor(
         return repository.updateMyProfile(result)
     }
 
+
+    val profilesOffline = repository.getProfilesFromRepositoryOffline()
+
 }

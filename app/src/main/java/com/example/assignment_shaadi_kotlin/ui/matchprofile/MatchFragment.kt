@@ -1,5 +1,6 @@
 package com.example.assignment_shaadi_kotlin.ui.matchprofile
 
+
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,6 +16,7 @@ import com.example.assignment_shaadi_kotlin.data.entities.Result
 import com.example.assignment_shaadi_kotlin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.assignment_shaadi_kotlin.databinding.FragmentMatchBinding
+import com.example.assignment_shaadi_kotlin.utils.Utils
 import com.example.assignment_shaadi_kotlin.utils.autoCleared
 import kotlinx.android.synthetic.main.fragment_match.*
 
@@ -35,7 +37,15 @@ class MatchFragment : Fragment(), MatchProfileAdapter.MatchProfileAcceptedItemLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
-        setupObservers()
+        if(Utils.isInternetAvailable(requireContext())) {
+            setupObservers()
+        }
+        else {
+            viewModel.profilesOffline.observe(viewLifecycleOwner, Observer {
+                it.data?.let { it1 -> handleMyObservable(it, it1) }
+            })
+        }
+
     }
 
     private fun setupRecyclerView() {
@@ -46,42 +56,7 @@ class MatchFragment : Fragment(), MatchProfileAdapter.MatchProfileAcceptedItemLi
 
     private fun setupObservers() {
         viewModel.profiles.observe(viewLifecycleOwner, Observer {
-            when (it.status) {
-                Resource.Status.SUCCESS -> {
-                    binding.progressBar.visibility = View.GONE
-                    if (!it.data.isNullOrEmpty()) {
-                        Log.e("MAINDATA", it.data.toString())
-                        listValue.addAll(it.data)
-                        adapter.setItems(ArrayList(it.data))
-                        no_data.visibility = View.GONE
-                        characters_rv.visibility = View.VISIBLE
-                    }else{
-                        Log.e("MAINDATA111", it.data.toString())
-                        no_data.visibility = View.VISIBLE
-                        characters_rv.visibility = View.GONE
-                    }
-
-                }
-                Resource.Status.ERROR -> {
-
-                    binding.progressBar.visibility = View.GONE
-                    Log.e("MAINDATA1222", it.data.toString())
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                    if(listValue.isNullOrEmpty()){
-                        Log.e("MAINDATA1233332", it.data.toString())
-                        no_data.visibility = View.VISIBLE
-                        characters_rv.visibility = View.GONE
-                    }else {
-                        Log.e("MAINDATA134342423222", it.data.toString())
-                        characters_rv.visibility = View.VISIBLE
-                    }
-                }
-                Resource.Status.LOADING -> {
-                    binding.progressBar.visibility = View.VISIBLE
-
-
-                }
-            }
+            it.data?.let { it1 -> handleMyObservable(it, it1) }
         })
     }
 
@@ -98,6 +73,38 @@ class MatchFragment : Fragment(), MatchProfileAdapter.MatchProfileAcceptedItemLi
         viewModel.updateProfile(matchResult).observe(this, Observer {
             if(it>0) Log.e("VALUE",it.toString())
         })
+    }
+
+    private fun handleMyObservable(
+        it: Resource<List<Result>>,
+        data: List<Result>
+    ) {
+        when (it.status) {
+            Resource.Status.SUCCESS -> {
+                binding.progressBar.visibility = View.GONE
+                if (!it.data.isNullOrEmpty()) {
+                    adapter.setItems(ArrayList(data))
+                    no_data.visibility = View.GONE
+                    characters_rv.visibility = View.VISIBLE
+                } else {
+                    no_data.visibility = View.VISIBLE
+                    characters_rv.visibility = View.GONE
+                }
+            }
+            Resource.Status.LOADING -> {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            Resource.Status.ERROR -> {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                if (listValue.isNullOrEmpty()) {
+                    no_data.visibility = View.VISIBLE
+                    characters_rv.visibility = View.GONE
+                } else {
+                    characters_rv.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
 

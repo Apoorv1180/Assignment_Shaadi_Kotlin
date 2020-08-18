@@ -29,5 +29,14 @@ fun <T, A> performGetOperation(databaseQuery: ()  -> LiveData<T>,
             }
         }
 
-
-
+fun <T> performGetOperationOffline(databaseQuery: ()  -> LiveData<T>,
+                               saveCallResult: (T) -> Unit): LiveData<Resource<T>> =
+    liveData(Dispatchers.IO) {
+        emit(Resource.loading())
+            val source = databaseQuery.invoke().map {
+                Log.e("source", it.toString())
+                saveCallResult(it)
+                Resource.success(it)
+            }
+            emitSource(source)
+    }
